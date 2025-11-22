@@ -48,15 +48,35 @@ spec:
               value: http://{{ include "supabase.meta.fullname" . }}:{{ .Values.meta.service.port }}
             {{- end }}
             - name: POSTGRES_HOST
+              {{- if .Values.db.enabled }}
+              value: {{ include "supabase.db.fullname" . }}
+              {{- else }}
               value: $(DB_HOST)
+              {{- end }}
             - name: POSTGRES_PORT
               value: $(DB_PORT)
             - name: POSTGRES_DB
-              value: $(DB_NAME)
+              valueFrom:
+                secretKeyRef:
+                  {{- if .Values.secret.db.secretRef }}
+                  name: {{ .Values.secret.db.secretRef }}
+                  key: {{ .Values.secret.db.secretRefKey.database | default "database" }}
+                  {{- else }}
+                  name: {{ include "supabase.secret.db" . }}
+                  key: database
+                  {{- end }}
             - name: POSTGRES_USER
               value: $(DB_USER)
             - name: POSTGRES_PASSWORD
-              value: $(DB_PASSWORD) 
+              valueFrom:
+                secretKeyRef:
+                  {{- if .Values.secret.db.secretRef }}
+                  name: {{ .Values.secret.db.secretRef }}
+                  key: {{ .Values.secret.db.secretRefKey.password | default "password" }}
+                  {{- else }}
+                  name: {{ include "supabase.secret.db" . }}
+                  key: password
+                  {{- end }}
             - name: AUTH_JWT_SECRET
               valueFrom:
                 secretKeyRef:
