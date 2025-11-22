@@ -47,6 +47,26 @@ spec:
             - name: STUDIO_PG_META_URL
               value: http://{{ include "supabase.meta.fullname" . }}:{{ .Values.meta.service.port }}
             {{- end }}
+            - name: POSTGRES_HOST
+              value: $(DB_HOST)
+            - name: POSTGRES_PORT
+              value: $(DB_PORT)
+            - name: POSTGRES_DB
+              value: $(DB_NAME)
+            - name: POSTGRES_USER
+              value: $(DB_USER)
+            - name: POSTGRES_PASSWORD
+              value: $(DB_PASSWORD) 
+            - name: AUTH_JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  {{- if .Values.secret.jwt.secretRef }}
+                  name: {{ .Values.secret.jwt.secretRef }}
+                  key: {{ .Values.secret.jwt.secretRefKey.secret | default "secret" }}
+                  {{- else }}
+                  name: {{ include "supabase.secret.jwt" . }}
+                  key: secret
+                  {{- end }}
             - name: SUPABASE_ANON_KEY
               valueFrom:
                 secretKeyRef:
