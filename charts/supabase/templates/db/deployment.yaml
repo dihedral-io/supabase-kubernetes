@@ -77,6 +77,8 @@ spec:
           {{- if and .Values.db.environment.POSTGRES_SSL_CERT .Values.db.environment.POSTGRES_SSL_KEY }}
           args:
           - "-c"
+          - "config_file=/etc/postgresql/postgresql.conf"
+          - "-c"
           - "ssl=on"
           - "-c"
           - "ssl_cert_file=$(POSTGRES_SSL_CERT)"
