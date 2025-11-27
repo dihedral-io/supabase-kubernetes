@@ -29,6 +29,22 @@ spec:
       securityContext:
         {{- toYaml .Values.db.podSecurityContext | nindent 8 }}
       initContainers:
+        - name: init-ssl-certs
+          image: "{{ .Values.db.image.repository }}:{{ .Values.db.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              echo "Setting up SSL certificates..."
+              cp /tmp/certs-raw/* /etc/ssl/postgres/
+              chown 999:999 /etc/ssl/postgres/server.key
+              chmod 600 /etc/ssl/postgres/server.key
+              ls -la /etc/ssl/postgres/
+          volumeMounts:
+            - name: secret-certs-raw
+              mountPath: /tmp/certs-raw
+            - name: ssl-final-dest
+              mountPath: /etc/ssl/postgres
         - name: init-db
           image: "{{ .Values.db.image.repository }}:{{ .Values.db.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: IfNotPresent
