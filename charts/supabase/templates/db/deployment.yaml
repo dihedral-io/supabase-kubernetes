@@ -41,9 +41,9 @@ spec:
               chmod 600 /etc/ssl/postgres/server.key
               ls -la /etc/ssl/postgres/
           volumeMounts:
-            - name: secret-certs-raw
+            - name: supabase-db-cert-src
               mountPath: /tmp/certs-raw
-            - name: ssl-final-dest
+            - name: supabase-db-cert-dst
               mountPath: /etc/ssl/postgres
         - name: init-db
           image: "{{ .Values.db.image.repository }}:{{ .Values.db.image.tag | default .Chart.AppVersion }}"
