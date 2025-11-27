@@ -37,7 +37,7 @@ spec:
             - |
               echo "Setting up SSL certificates..."
               cp /tmp/certs-raw/* /etc/ssl/postgres/
-              chown 999:999 /etc/ssl/postgres/server.key
+              chown postgres:postgres /etc/ssl/postgres/server.key
               chmod 600 /etc/ssl/postgres/server.key
               ls -la /etc/ssl/postgres/
           volumeMounts:
