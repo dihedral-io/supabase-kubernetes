@@ -32,14 +32,29 @@ spec:
         - name: init-ssl-certs
           image: "{{ .Values.db.image.repository }}:{{ .Values.db.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: IfNotPresent
+          env:
+            {{- range $key, $value := .Values.db.environment }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
           command: ["/bin/sh", "-c"]
           args:
             - |
-              echo "Setting up SSL certificates..."
-              cp /tmp/certs-raw/* /etc/ssl/postgres/
-              chown postgres:postgres /etc/ssl/postgres/server.key
-              chmod 600 /etc/ssl/postgres/server.key
-              ls -la /etc/ssl/postgres/
+              if [ -n "$POSTGRES_SSL_CERT" ] && [ -n "$POSTGRES_SSL_KEY" ]; then
+                echo "Setting up SSL certificates..."
+                cp /tmp/certs-raw/* /etc/ssl/postgres/
+                chown postgres:postgres /etc/ssl/postgres/server.key
+                chmod 600 /etc/ssl/postgres/server.key
+
+                echo "Backing up pg_hba.conf..."
+                cp /etc/postgresql/pg_hba.conf /etc/postgresql/pg_hba.conf.bak
+
+                echo "Updating pg_hba.conf with ssl enforcment..."
+                sed -i 's/^host /hostssl /g' /etc/postgresql/pg_hba.conf
+              fi
+
+              echo "HBA Configuration:"
+              cat /etc/postgresql/pg_hba.conf
           volumeMounts:
             - name: supabase-db-cert-src
               mountPath: /tmp/certs-raw
