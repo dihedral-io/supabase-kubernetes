@@ -15,10 +15,8 @@ data:
   99-logs.sql: |
     \set pguser `echo "$POSTGRES_USER"`
 
-    \c _supabase
     create schema if not exists _analytics;
     alter schema _analytics owner to :pguser;
-    \c postgres
   99-realtime.sql: |
     \set pguser `echo "$POSTGRES_USER"`
 
@@ -33,13 +31,6 @@ data:
     ALTER USER supabase_auth_admin WITH PASSWORD :'pgpass';
     ALTER USER supabase_functions_admin WITH PASSWORD :'pgpass';
     ALTER USER supabase_storage_admin WITH PASSWORD :'pgpass';
-  99-pooler.sql: |
-    \set pguser `echo "$POSTGRES_USER"`
-
-    \c _supabase
-    create schema if not exists _supavisor;
-    alter schema _supavisor owner to :pguser;
-    \c postgres
   98-webhooks.sql: |
     BEGIN;
       -- Create pg_net extension
@@ -249,10 +240,6 @@ data:
       REVOKE ALL ON FUNCTION supabase_functions.http_request() FROM PUBLIC;
       GRANT EXECUTE ON FUNCTION supabase_functions.http_request() TO postgres, anon, authenticated, service_role;
     COMMIT;
-  97-_supabase.sql: |
-    \set pguser `echo "$POSTGRES_USER"`
-
-    CREATE DATABASE _supabase WITH OWNER :pguser;
   # see https://github.com/supabase/supabase/blob/master/apps/docs/content/guides/self-hosting/docker.mdx#upgrading-analytics
   97-drop_logflare_pub.sql: |
     \set pguser `echo "$POSTGRES_USER"`
