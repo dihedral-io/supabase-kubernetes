@@ -40,21 +40,23 @@ spec:
           command: ["/bin/sh", "-c"]
           args:
             - |
+              # Copy the default file to a shared location
+              cp /etc/postgresql/pg_hba.conf /etc/ssl/postgres/pg_hba.conf
+
               if [ -n "$POSTGRES_SSL_CERT" ] && [ -n "$POSTGRES_SSL_KEY" ]; then
+                # Copy certificates to a shared location with proper permissions
                 echo "Setting up SSL certificates..."
                 cp /tmp/certs-raw/* /etc/ssl/postgres/
                 chown postgres:postgres /etc/ssl/postgres/server.key
                 chmod 600 /etc/ssl/postgres/server.key
 
-                echo "Backing up pg_hba.conf..."
-                cp /etc/postgresql/pg_hba.conf /etc/postgresql/pg_hba.conf.bak
-
-                echo "Updating pg_hba.conf with ssl enforcment..."
-                sed -i 's/^host /hostssl /g' /etc/postgresql/pg_hba.conf
+                # Enforce ssl by replacing host entries with hostssl in pg_hba.conf
+                sed -i 's/^host\s\+all\s\+all\s\+0.0.0.0\/0/hostssl all all 0.0.0.0\/0/g' /etc/ssl/postgres/pg_hba.conf
+                sed -i 's/^host\s\+all\s\+all\s\+::\/0/hostssl all all ::\/0/g' /etc/ssl/postgres/pg_hba.conf
               fi
 
               echo "HBA Configuration:"
-              cat /etc/postgresql/pg_hba.conf
+              cat /etc/ssl/postgres/pg_hba.conf
           volumeMounts:
             - name: supabase-db-cert-src
               mountPath: /tmp/certs-raw
@@ -93,6 +95,8 @@ spec:
           args:
           - "-c"
           - "config_file=/etc/postgresql/postgresql.conf"
+          - "-c"
+          - "hba_file=/etc/ssl/postgres/pg_hba.conf"
           - "-c"
           - "ssl=on"
           - "-c"
