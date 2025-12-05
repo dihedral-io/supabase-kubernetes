@@ -240,9 +240,4 @@ data:
       REVOKE ALL ON FUNCTION supabase_functions.http_request() FROM PUBLIC;
       GRANT EXECUTE ON FUNCTION supabase_functions.http_request() TO postgres, anon, authenticated, service_role;
     COMMIT;
-  # see https://github.com/supabase/supabase/blob/master/apps/docs/content/guides/self-hosting/docker.mdx#upgrading-analytics
-  97-drop_logflare_pub.sql: |
-    \set pguser `echo "$POSTGRES_USER"`
-
-    drop publication if exists logflare_pub;
 {{- end }}
