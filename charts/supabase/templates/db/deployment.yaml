@@ -53,6 +53,10 @@ spec:
 
                 # Enforce ssl by replacing host entries with hostssl in pg_hba.conf
                 sed -i 's/^host /hostssl /g' /etc/ssl/postgres/pg_hba.conf
+
+                # Add an ssl exception for local connections (i.e.: port-forwarding)
+                sed -i 's/^hostssl\s\+all\s\+all\s\+127.0.0.1\/32/host all all 127.0.0.1\/32/g' /etc/ssl/postgres/pg_hba.conf
+                sed -i 's/^hostssl\s\+all\s\+all\s\+::1\/128/host all all ::1\/128/g' /etc/ssl/postgres/pg_hba.conf
               fi
 
               echo "HBA Configuration:"
