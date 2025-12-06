@@ -75,10 +75,13 @@ spec:
               value: $(DB_PASSWORD)
             - name: PG_META_DB_SSL_MODE
               value: $(DB_SSL)
-            - name: PG_META_DB_URL
-              value: $(DB_DRIVER)://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)?sslmode=$(DB_SSL)
-            - name: NODE_EXTRA_CA_CERTS
-              value: $(DB_SSL_ROOT_CERT)
+            {{- if .Values.meta.environment.DB_SSL_ROOT_CERT_CONFIGMAP_NAME }}
+            - name: PG_META_DB_SSL_ROOT_CERT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.meta.environment.DB_SSL_ROOT_CERT_CONFIGMAP_NAME }}
+                  key: {{ .Values.meta.environment.DB_SSL_ROOT_CERT_CONFIGMAP_KEY | default "ca.crt" }}
+            {{- end }}
           {{- with .Values.meta.livenessProbe }}
           livenessProbe:
             {{- toYaml . | nindent 12 }}
