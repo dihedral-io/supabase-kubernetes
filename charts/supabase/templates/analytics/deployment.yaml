@@ -121,7 +121,7 @@ spec:
               value: {{ .Values.analytics.bigQuery.projectNumber | quote }}
             {{- else }}
             - name: POSTGRES_BACKEND_URL
-              value: $(DB_DRIVER)://$(DB_USERNAME):$(DB_PASSWORD_ENC)@$(DB_HOSTNAME):$(DB_PORT)/$(DB_DATABASE)
+              value: $(DB_DRIVER)://$(DB_USERNAME):$(DB_PASSWORD_ENC)@$(DB_HOSTNAME):$(DB_PORT)/$(DB_DATABASE)?ssl=$(DB_SSL)
             - name: POSTGRES_BACKEND_SCHEMA
               value: $(DB_SCHEMA)
             - name: LOGFLARE_FEATURE_FLAG_OVERRIDE

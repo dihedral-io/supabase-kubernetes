@@ -896,6 +896,7 @@ analytics:
     DB_PORT: 5432
     DB_DRIVER: postgresql
     DB_SCHEMA: _analytics
+    DB_SSL: false
     LOGFLARE_SINGLE_TENANT: "true"
     LOGFLARE_SUPABASE_MODE: "true"
     FEATURE_FLAG_OVERRIDE: multibackend=true
