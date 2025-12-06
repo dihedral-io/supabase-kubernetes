@@ -75,8 +75,8 @@ spec:
               value: $(DB_PASSWORD)
             - name: PG_META_DB_SSL_MODE
               value: $(DB_SSL)
-            - name: PG_META_DB_SSL_ROOT_CERT
-              value: $(DB_SSL_ROOT_CERT)
+            - name: PG_META_DB_URL
+              value: $(DB_DRIVER)://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)?sslmode=$(DB_SSL)
             - name: NODE_EXTRA_CA_CERTS
               value: $(DB_SSL_ROOT_CERT)
           {{- with .Values.meta.livenessProbe }}
