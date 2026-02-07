@@ -138,6 +138,13 @@ spec:
                   name: {{ include "supabase.secret.smtp" . }}
                   key: password
                   {{- end }}
+            {{- if .Values.secret.auth.secretRef }}
+            - name: GOTRUE_HOOK_CUSTOM_ACCESS_TOKEN_SECRETS
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secret.auth.secretRef }}
+                  key: {{ .Values.secret.auth.secretRefKey | default "secret" }}
+            {{- end }}
           {{- with .Values.auth.envFrom }}
           envFrom:
             {{- toYaml . | nindent 12 }}
