@@ -49,6 +49,30 @@ data:
     {{- end }}
     services:
     {{- if .Values.auth.enabled }}
+      {{- if .Values.auth.saml.enabled }}
+      - name: auth-v1-sso-metadata
+        url: http://{{ include "supabase.auth.fullname" . }}:{{ .Values.auth.service.port }}/sso/saml/metadata
+        routes:
+          - name: auth-v1-sso-metadata
+            strip_path: true
+            paths:
+              - /auth/v1/sso/saml/metadata
+            plugins:
+              - name: cors
+              - name: key-auth
+                enabled: false
+      - name: auth-v1-sso-acs
+        url: http://{{ include "supabase.auth.fullname" . }}:{{ .Values.auth.service.port }}/sso/saml/acs
+        routes:
+          - name: auth-v1-sso-acs
+            strip_path: true
+            paths:
+              - /auth/v1/sso/saml/acs
+            plugins:
+              - name: cors
+              - name: key-auth
+                enabled: false
+      {{- end }}
       - name: auth-v1-open
         url: http://{{ include "supabase.auth.fullname" . }}:{{ .Values.auth.service.port }}/verify
         routes:
@@ -94,7 +118,7 @@ data:
               hide_groups_header: true
               allow:
                 - admin
-                - anon
+                - anon    
     {{- end }}
     {{- if .Values.rest.enabled }}
       - name: rest-v1
